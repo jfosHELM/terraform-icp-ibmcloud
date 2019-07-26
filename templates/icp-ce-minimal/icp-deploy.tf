@@ -5,13 +5,13 @@ module "icpprovision" {
     source = "github.com/ibm-cloud-architecture/terraform-module-icp-deploy.git?ref=2.3.5"
 
     # Provide IP addresses for boot, master, mgmt, va, proxy and workers
-    boot-node = "${ibm_compute_vm_instance.icp-master.ipv4_address}"
+    boot-node = "${ibm_compute_vm_instance.icp-master.ipv4_address_private}"
     icp-host-groups = {
-        master = ["${ibm_compute_vm_instance.icp-master.*.ipv4_address}"]
-        proxy = ["${ibm_compute_vm_instance.icp-proxy.*.ipv4_address}"]
-        worker = ["${ibm_compute_vm_instance.icp-worker.*.ipv4_address}"]
-        management = ["${ibm_compute_vm_instance.icp-mgmt.*.ipv4_address}"]
-        va = ["${ibm_compute_vm_instance.icp-va.*.ipv4_address}"]
+        master = ["${ibm_compute_vm_instance.icp-master.*.ipv4_address_private}"]
+        proxy = ["${ibm_compute_vm_instance.icp-proxy.*.ipv4_address_private}"]
+        worker = ["${ibm_compute_vm_instance.icp-worker.*.ipv4_address_private}"]
+        management = ["${ibm_compute_vm_instance.icp-mgmt.*.ipv4_address_private}"]
+        va = ["${ibm_compute_vm_instance.icp-va.*.ipv4_address_private}"]
     }
 
     # Provide desired ICP version to provision
@@ -29,7 +29,7 @@ module "icpprovision" {
       "service_cluster_ip_range"        = "${var.service_network_cidr}"
       # "cluster_CA_domain"               = "${ibm_lbaas.master-lbaas.vip}"
       "cluster_name"                    = "${var.deployment}"
-      "calico_ip_autodetection_method"  = "interface=eth1"
+      "calico_ip_autodetection_method"  = "interface=eth0"
 
       # An admin password will be generated if not supplied in terraform.tfvars
       "default_admin_password"          = "${local.icppassword}"
@@ -52,23 +52,23 @@ module "icpprovision" {
 }
 
 output "icp_console_host" {
-  value = "${element(ibm_compute_vm_instance.icp-master.*.ipv4_address, 0)}"
+  value = "${element(ibm_compute_vm_instance.icp-master.*.ipv4_address_private, 0)}"
 }
 
 output "icp_console_url" {
-  value = "https://${element(ibm_compute_vm_instance.icp-master.*.ipv4_address, 0)}:8443"
+  value = "https://${element(ibm_compute_vm_instance.icp-master.*.ipv4_address_private, 0)}:8443"
 }
 
 output "icp_proxy_host" {
-  value = "${element(ibm_compute_vm_instance.icp-proxy.*.ipv4_address, 0)}"
+  value = "${element(ibm_compute_vm_instance.icp-proxy.*.ipv4_address_private, 0)}"
 }
 
 output "kubernetes_api_url" {
-  value = "https://${element(ibm_compute_vm_instance.icp-master.*.ipv4_address, 0)}:8001"
+  value = "https://${element(ibm_compute_vm_instance.icp-master.*.ipv4_address_private, 0)}:8001"
 }
 
 output "icp_admin_username" {
-  value = "admin"
+  value = "icpadmin"
 }
 
 output "icp_admin_password" {
