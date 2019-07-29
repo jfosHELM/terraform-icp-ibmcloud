@@ -53,15 +53,9 @@ resource "ibm_compute_vm_instance" "icp-boot" {
   public_vlan_id = "${local.public_vlan_id}"
   private_vlan_id = "${local.private_vlan_id}"
 
-  public_security_group_ids = ["${compact(concat(
-    ibm_security_group.cluster_public.*.id,
-    list("${var.private_network_only != true ? ibm_security_group.boot_node_public.id : "" }")
-  ))}"]
+  public_security_group_ids = ["ICP_public"]
 
-  private_security_group_ids = ["${compact(concat(
-    list("${ibm_security_group.cluster_private.id}"),
-    ibm_security_group.boot_node_public.*.id
-  ))}"]
+  private_security_group_ids = ["ICP_private"]
 
   # Permit an ssh loging for the key owner.
   # You can have multiple keys defined.
@@ -130,13 +124,10 @@ resource "ibm_compute_vm_instance" "icp-master" {
   private_vlan_id = "${local.private_vlan_id}"
 
 
-  public_security_group_ids = [
-    "${ibm_security_group.cluster_public.id}",
-    "${ibm_security_group.master_group.*.id}"
-  ]
+  public_security_group_ids = ["ICP_public"]
 
   private_security_group_ids = [
-    "${ibm_security_group.cluster_private.id}"
+    "ICP_private"
   ]
 
   tags = [
@@ -205,12 +196,10 @@ resource "ibm_compute_vm_instance" "icp-mgmt" {
   public_vlan_id = "${local.public_vlan_id}"
   private_vlan_id = "${local.private_vlan_id}"
 
-  public_security_group_ids = ["${compact(concat(
-    ibm_security_group.cluster_public.*.id
-  ))}"]
+  public_security_group_ids = ["IPC_public"]
 
   private_security_group_ids = [
-    "${ibm_security_group.cluster_private.id}"
+    "ICP_private"
   ]
 
   tags = [
@@ -286,12 +275,10 @@ resource "ibm_compute_vm_instance" "icp-va" {
   public_vlan_id = "${local.public_vlan_id}"
   private_vlan_id = "${local.private_vlan_id}"
 
-  public_security_group_ids = ["${compact(concat(
-    ibm_security_group.cluster_public.*.id
-  ))}"]
+  public_security_group_ids = ["ICP_public"]
 
   private_security_group_ids = [
-    "${ibm_security_group.cluster_private.id}"
+    "ICP_private"
   ]
 
   local_disk = "${var.va["local_disk"]}"
@@ -379,12 +366,11 @@ resource "ibm_compute_vm_instance" "icp-proxy" {
   private_vlan_id = "${local.private_vlan_id}"
 
   public_security_group_ids = [
-    "${ibm_security_group.proxy_group.id}",
-    "${ibm_security_group.cluster_public.id}"
+    "ICP_public"
   ]
 
   private_security_group_ids = [
-    "${ibm_security_group.cluster_private.id}"
+    "ICP_private"
   ]
 
   local_disk = "${var.proxy["local_disk"]}"
@@ -460,12 +446,10 @@ resource "ibm_compute_vm_instance" "icp-worker" {
   public_vlan_id = "${local.public_vlan_id}"
   private_vlan_id = "${local.private_vlan_id}"
 
-  public_security_group_ids = ["${compact(concat(
-    ibm_security_group.cluster_public.*.id
-  ))}"]
+  public_security_group_ids = ["ICP_public"]
 
   private_security_group_ids = [
-    "${ibm_security_group.cluster_private.id}"
+    "ICP_private"
   ]
 
   local_disk = "${var.worker["local_disk"]}"
